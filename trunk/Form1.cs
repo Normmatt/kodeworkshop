@@ -286,6 +286,21 @@ namespace Kode_Workshop
                                     }
                                     break;
                                 }
+                            case 14:
+                                {
+                                    codeOutput.AppendText("Type E : 'patch' code. Copies YYYYYYYY bytes from (current code location + 8)\nto  [XXXXXXXX + offset].\nEXXXXXXX YYYYYYYY\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("In This Case : Copies 0x" + sValue + " bytes from (current code location + 8) to  [0x" + sCode.Remove(0,1) + " + offset]\n");
+                                    break;
+                                }
+                            case 15:
+                                {
+                                    codeOutput.AppendText("Type F : memory copy code. It seems you have to use the code type D3, DC or B\nbefore, to set the offset (which is then an address). Then D2 should be needed\nto clear the offset (else it will affect all the next codes).\nD3000000 XXXXXXXX\nFYYYYYYY ZZZZZZZZ\nshould copy ZZZZZZZZ bytes from offset (=XXXXXXXX in this case) to YYYYYYYY\n(YYYYYYYY if fixed, ie. no offset are added to it). \n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("In This Case : copy 0x" + sValue + " bytes from offset (XXXXXXXX) to " + sCode.Remove(0, 1).PadLeft(8,'0') + "\n");
+                                    codeOutput.AppendText("\n");
+                                    continue;
+                                }
                             default:
                                 break;
                         }
