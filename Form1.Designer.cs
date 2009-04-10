@@ -59,6 +59,7 @@
             this.codeOutput.Size = new System.Drawing.Size(349, 290);
             this.codeOutput.TabIndex = 3;
             this.codeOutput.Text = "";
+            this.codeOutput.WordWrap = false;
             // 
             // Form1
             // 
