@@ -43,7 +43,9 @@ namespace Kode_Workshop
                         codeOutput.AppendText(temp + " ");
                         codeOutput.AppendText(":\n");
 
-                        switch (code >> 28)
+                        int codeType = (code >> 28) & 0x0F;
+
+                        switch (codeType)
                         {
                             case 0:
                                 {
@@ -66,6 +68,88 @@ namespace Kode_Workshop
                                     codeOutput.AppendText("Type 2 : 8 bits write (strb)\n");
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("writes byte 0x" + sValue.Remove(0, 6) + " to [0x" + sCode + "+offset])\n");
+                                    codeOutput.AppendText("\n");
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    codeOutput.AppendText("Type 3 : 32 bits If (code value)>(data at address)\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
+                                    codeOutput.AppendText("\n");
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    codeOutput.AppendText("Type 4 : 32 bits If (code value)<(data at address)\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
+                                    codeOutput.AppendText("\n");
+                                    break;
+                                }
+                            case 5:
+                                {
+                                    codeOutput.AppendText("Type 5 : 32 bits If ==\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
+                                    codeOutput.AppendText("\n");
+                                    break;
+                                }
+                            case 6:
+                                {
+                                    codeOutput.AppendText("Type 6 : 32 bits If !=\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
+                                    codeOutput.AppendText("\n");
+                                    break;
+                                }
+                            case 7:
+                                {
+                                    codeOutput.AppendText("Type 7 : 16 bits If (code value)>(mask & data at address) (unsigned)\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("7XXXXXXX ZZZZYYYY : checks if (YYYY) > (not (ZZZZ) & halfword at [XXXXXXXX])\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") > (0x" + Convert.ToString(~(value >> 16)&0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
+                                    codeOutput.AppendText("\n");
+                                    break;
+                                }
+                            case 8:
+                                {
+                                    codeOutput.AppendText("Type 8 : 16 bits if (code value)<(mask & data at address) (unsigned)\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("8XXXXXXX ZZZZYYYY : checks if (YYYY) < (not (ZZZZ) & halfword at [XXXXXXXX])\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") < (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
+                                    codeOutput.AppendText("\n");
+                                    break;
+                                }
+                            case 9:
+                                {
+                                    codeOutput.AppendText("Type 9 : 16 bits if (code value)==(mask & data at address)\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("9XXXXXXX ZZZZYYYY : checks if (YYYY) == (not (ZZZZ) & halfword at [XXXXXXXX])\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") == (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
+                                    codeOutput.AppendText("\n");
+                                    break;
+                                }
+                            case 10:
+                                {
+                                    codeOutput.AppendText("Type A : 16 bits if (code value)!=(mask & data at address)\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("AXXXXXXX ZZZZYYYY : checks if (YYYY) != (not (ZZZZ) & halfword at [XXXXXXXX])\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") != (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
+                                    codeOutput.AppendText("\n");
+                                    break;
+                                }
+                            case 11:
+                                {
+                                    codeOutput.AppendText("Type B : loads the 32bits value into the 'offset'\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("BXXXXXXXX 00000000 : offset = word at [0XXXXXXX]\n");
+                                    codeOutput.SelectionColor = Color.Green;
+                                    codeOutput.AppendText("In This Case : offset = word at [" + sCode + "]\n");
                                     codeOutput.AppendText("\n");
                                     break;
                                 }
