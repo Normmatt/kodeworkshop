@@ -35,16 +35,15 @@
             // 
             // codeInput
             // 
-            this.codeInput.Location = new System.Drawing.Point(27, 58);
+            this.codeInput.Location = new System.Drawing.Point(12, 12);
             this.codeInput.Multiline = true;
             this.codeInput.Name = "codeInput";
-            this.codeInput.Size = new System.Drawing.Size(254, 290);
+            this.codeInput.Size = new System.Drawing.Size(207, 290);
             this.codeInput.TabIndex = 0;
-            this.codeInput.Text = "01234567 89abcdef";
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(283, 377);
+            this.button1.Location = new System.Drawing.Point(489, 308);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(138, 30);
             this.button1.TabIndex = 2;
@@ -54,9 +53,9 @@
             // 
             // codeOutput
             // 
-            this.codeOutput.Location = new System.Drawing.Point(297, 58);
+            this.codeOutput.Location = new System.Drawing.Point(225, 12);
             this.codeOutput.Name = "codeOutput";
-            this.codeOutput.Size = new System.Drawing.Size(349, 290);
+            this.codeOutput.Size = new System.Drawing.Size(402, 290);
             this.codeOutput.TabIndex = 3;
             this.codeOutput.Text = "";
             this.codeOutput.WordWrap = false;
@@ -65,7 +64,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(673, 459);
+            this.ClientSize = new System.Drawing.Size(640, 351);
             this.Controls.Add(this.codeOutput);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.codeInput);
