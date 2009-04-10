@@ -24,6 +24,8 @@ namespace Kode_Workshop
             int code = 0;
             int value = 0;
 
+            int ifCount = 0;
+
             //Lets clear textbox so we dont get lots of crap
             codeOutput.Clear();
 
@@ -52,6 +54,11 @@ namespace Kode_Workshop
                         {
                             case 0:
                                 {
+                                    if (code == 0)
+                                    {
+                                        codeOutput.AppendText("Type 0 : Manual Hook\n");
+                                        break;
+                                    }
                                     codeOutput.AppendText("Type 0 : 32 bits write (str)\n");
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("writes word 0x" + sValue + " to [0x" + sCode + "+offset])\n");
@@ -80,6 +87,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
+                                    ifCount++;
                                     break;
                                 }
                             case 4:
@@ -88,6 +96,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
+                                    ifCount++;
                                     break;
                                 }
                             case 5:
@@ -96,6 +105,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
+                                    ifCount++;
                                     break;
                                 }
                             case 6:
@@ -104,6 +114,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
+                                    ifCount++;
                                     break;
                                 }
                             case 7:
@@ -114,6 +125,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") > (0x" + Convert.ToString(~(value >> 16)&0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
+                                    ifCount++;
                                     break;
                                 }
                             case 8:
@@ -124,6 +136,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") < (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
+                                    ifCount++;
                                     break;
                                 }
                             case 9:
@@ -134,6 +147,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") == (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
+                                    ifCount++;
                                     break;
                                 }
                             case 10:
@@ -144,6 +158,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") != (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
+                                    ifCount++;
                                     break;
                                 }
                             case 11:
@@ -158,6 +173,13 @@ namespace Kode_Workshop
                                 }
                             case 12:
                                 {
+                                    //Todo add code types C4, C5 and C6
+                                    if (((code & 0x0FFFFFFF) != 0))
+                                    {
+                                        codeOutput.SelectionColor = Color.Red;
+                                        codeOutput.AppendText("Code Error not C0000000\n");
+                                        break;
+                                    }
                                     codeOutput.AppendText("Type C : defines the start of the loop code\n");
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("C0000000 YYYYYYYY : set the 'Dx repeat value' to YYYYYYYY, saves the 'Dx next\ncode to be executed' and the 'Dx execution status'. Repeat will be executed when\na D1/D2 code is encountered. When repeat is executed, the AR reloads the 'next\ncode to be executed' and the 'execution status' from the Dx registers\n");
@@ -167,21 +189,30 @@ namespace Kode_Workshop
                                 }
                             case 13:
                                 {
+                                    if (((code & 0x00FFFFFF) != 0))
+                                    {
+                                        codeOutput.SelectionColor = Color.Red;
+                                        codeOutput.AppendText("Code Error not D" + Convert.ToString(dType,16).ToUpper() + "000000\n");
+                                        break;
+                                    }
+
                                     switch (dType)
                                     {
                                         case 0:
                                             {
                                                 codeOutput.AppendText("Type D0 : 'endif'\n");
-                                                if (((code & 0x00FFFFFF) != 0) || (value != 0))
+                                                if ((value != 0))
                                                 {
                                                     codeOutput.SelectionColor = Color.Red;
-                                                    codeOutput.AppendText("Code Error not D0000000 00000000\n");
+                                                    codeOutput.AppendText("Code Error value not 00000000\n");
+                                                    break;
                                                 }
                                                 codeOutput.SelectionColor = Color.Green;
                                                 codeOutput.AppendText("D0000000 00000000 : loads the previous execution status (if none exists, the\n");
                                                 codeOutput.SelectionColor = Color.Green;
                                                 codeOutput.AppendText("execution status stays at 'execute codes')\n");
                                                 codeOutput.AppendText("\n");
+                                                ifCount--;
                                                 break;
                                             }
                                         case 1:
@@ -314,6 +345,14 @@ namespace Kode_Workshop
                 {
                     codeOutput.AppendText("Parse error on line #" + i);
                 }
+            }
+
+            //Lets make sure there arent any missing ENDIF codes
+            if (ifCount != 0)
+            {
+                codeOutput.SelectionColor = Color.Red;
+                codeOutput.AppendText("You are missing " + ifCount + " ENDIF codes\n");
+                codeOutput.AppendText("\n");
             }
         }
 
