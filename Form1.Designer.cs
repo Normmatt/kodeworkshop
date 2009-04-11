@@ -195,7 +195,7 @@
             this.ClientSize = new System.Drawing.Size(640, 365);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
-            this.Text = "Kode Workshop";
+            this.Text = "&Kodinator - sent from the future to destroy your NDS!";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
