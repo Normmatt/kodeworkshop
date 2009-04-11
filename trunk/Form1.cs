@@ -85,7 +85,7 @@ namespace Kode_Workshop
                                 {
                                     codeOutput.AppendText("Type 3 : 32 bits If (code value)>(data at address)\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
+                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [0x" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -94,7 +94,7 @@ namespace Kode_Workshop
                                 {
                                     codeOutput.AppendText("Type 4 : 32 bits If (code value)<(data at address)\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
+                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [0x" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -103,7 +103,7 @@ namespace Kode_Workshop
                                 {
                                     codeOutput.AppendText("Type 5 : 32 bits If ==\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
+                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [0x" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -112,7 +112,7 @@ namespace Kode_Workshop
                                 {
                                     codeOutput.AppendText("Type 6 : 32 bits If !=\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [" + sCode + "])\n");
+                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [0x" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -123,7 +123,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("7XXXXXXX ZZZZYYYY : checks if (YYYY) > (not (ZZZZ) & halfword at [XXXXXXXX])\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") > (0x" + Convert.ToString(~(value >> 16)&0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
+                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") > (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [0x" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -134,7 +134,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("8XXXXXXX ZZZZYYYY : checks if (YYYY) < (not (ZZZZ) & halfword at [XXXXXXXX])\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") < (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
+                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") < (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [0x" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -145,7 +145,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("9XXXXXXX ZZZZYYYY : checks if (YYYY) == (not (ZZZZ) & halfword at [XXXXXXXX])\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") == (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
+                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") == (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [0x" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -156,7 +156,7 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("AXXXXXXX ZZZZYYYY : checks if (YYYY) != (not (ZZZZ) & halfword at [XXXXXXXX])\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") != (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [" + sCode + "])\n");
+                                    codeOutput.AppendText("In This Case : checks if (0x" + sValue.Substring(4, 4) + ") != (0x" + Convert.ToString(~(value >> 16) & 0xFFFF, 16) + " & halfword at [0x" + sCode + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -167,24 +167,48 @@ namespace Kode_Workshop
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("BXXXXXXXX 00000000 : offset = word at [0XXXXXXX]\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("In This Case : offset = word at [" + sCode + "]\n");
+                                    codeOutput.AppendText("In This Case : offset = word at [0x" + sCode + "]\n");
                                     codeOutput.AppendText("\n");
                                     break;
                                 }
                             case 12:
                                 {
-                                    //Todo add code types C4, C5 and C6
-                                    if (((code & 0x0FFFFFFF) != 0))
+                                    //Todo add code types C4 and C5
+                                    switch (dType)
                                     {
-                                        codeOutput.SelectionColor = Color.Red;
-                                        codeOutput.AppendText("Code Error not C0000000\n");
-                                        break;
+                                        case 0:
+                                            {
+                                                if (((code & 0x0FFFFFFF) != 0))
+                                                {
+                                                    codeOutput.SelectionColor = Color.Red;
+                                                    codeOutput.AppendText("Code Error not C0000000\n");
+                                                    break;
+                                                }
+                                                codeOutput.AppendText("Type C : defines the start of the loop code\n");
+                                                codeOutput.SelectionColor = Color.Green;
+                                                codeOutput.AppendText("C0000000 YYYYYYYY : set the 'Dx repeat value' to YYYYYYYY, saves the 'Dx next\ncode to be executed' and the 'Dx execution status'. Repeat will be executed when\na D1/D2 code is encountered. When repeat is executed, the AR reloads the 'next\ncode to be executed' and the 'execution status' from the Dx registers\n");
+                                                codeOutput.AppendText("In This Case : Dx repeat value = 0x" + sValue + "\n");
+                                                codeOutput.AppendText("\n");
+                                                break;
+                                            }
+                                        case 6:
+                                            {
+                                                if (((code & 0x00FFFFFF) != 0))
+                                                {
+                                                    codeOutput.SelectionColor = Color.Red;
+                                                    codeOutput.AppendText("Code Error not C6000000\n");
+                                                    break;
+                                                }
+                                                codeOutput.AppendText("Type C6 : Stores the offset at...\n");
+                                                codeOutput.SelectionColor = Color.Green;
+                                                codeOutput.AppendText("C6000000 YYYYYYYY Will store the offset at [YYYYYYYY].\n");
+                                                codeOutput.AppendText("In This Case : word at [0x" + sValue + "] = offset\n");
+                                                codeOutput.AppendText("\n");
+                                                break;
+                                            }
+                                        default:
+                                            break;
                                     }
-                                    codeOutput.AppendText("Type C : defines the start of the loop code\n");
-                                    codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("C0000000 YYYYYYYY : set the 'Dx repeat value' to YYYYYYYY, saves the 'Dx next\ncode to be executed' and the 'Dx execution status'. Repeat will be executed when\na D1/D2 code is encountered. When repeat is executed, the AR reloads the 'next\ncode to be executed' and the 'execution status' from the Dx registers\n");
-                                    codeOutput.AppendText("In This Case : Dx repeat value = 0x" + sValue + "\n");
-                                    codeOutput.AppendText("\n");
                                     break;
                                 }
                             case 13:
@@ -255,7 +279,7 @@ namespace Kode_Workshop
                                             {
                                                 codeOutput.AppendText("Type D6 : 32-bits incremental write of the data register (str).\nD6000000 XXXXXXXX : writes the 'Dx data' word to [XXXXXXXX+offset], and\nincrements the offset by 4\n");
                                                 codeOutput.SelectionColor = Color.Green;
-                                                codeOutput.AppendText("In This Case : writes the 'Dx data' word to [" + sValue + "+offset], and increments the offset by 4\n");
+                                                codeOutput.AppendText("In This Case : writes the 'Dx data' word to [0x" + sValue + "+offset], and increments the offset by 4\n");
                                                 codeOutput.AppendText("\n");
                                                 break;
                                             }
@@ -263,7 +287,7 @@ namespace Kode_Workshop
                                             {
                                                 codeOutput.AppendText("ype D7 : 16-bits incremental write of the data register (strh).\nD7000000 XXXXXXXX : writes the 'Dx data' halfword to [XXXXXXXX+offset], and\nincrements the offset by 2.\n");
                                                 codeOutput.SelectionColor = Color.Green;
-                                                codeOutput.AppendText("In This Case : writes the 'Dx data' halfword to [" + sValue + "+offset], and increments the offset by 2\n");
+                                                codeOutput.AppendText("In This Case : writes the 'Dx data' halfword to [0x" + sValue + "+offset], and increments the offset by 2\n");
                                                 codeOutput.AppendText("\n");
                                                 break;
                                             }
@@ -271,7 +295,7 @@ namespace Kode_Workshop
                                             {
                                                 codeOutput.AppendText("Type D8 : 8-bits incremental write of the data register (strb).\nD8000000 XXXXXXXX : writes the 'Dx data' byte to [XXXXXXXX+offset], and\nincrements the offset by 1.\n");
                                                 codeOutput.SelectionColor = Color.Green;
-                                                codeOutput.AppendText("In This Case : writes the 'Dx data' byte to [" + sValue + "+offset], and increments the offset by 1\n");
+                                                codeOutput.AppendText("In This Case : writes the 'Dx data' byte to [0x" + sValue + "+offset], and increments the offset by 1\n");
                                                 codeOutput.AppendText("\n");
                                                 break;
                                             }
@@ -279,7 +303,7 @@ namespace Kode_Workshop
                                             {
                                                 codeOutput.AppendText("Type D9 : 32-bits read to the data register (ldr).\nD9000000 XXXXXXXX : loads the word at [XXXXXXXX+offset] and stores it in the\n'Dx data'\n");
                                                 codeOutput.SelectionColor = Color.Green;
-                                                codeOutput.AppendText("In This Case : loads the word at [" + sValue + "+offset] and stores it in the 'Dx data'\n");
+                                                codeOutput.AppendText("In This Case : loads the word at [0x" + sValue + "+offset] and stores it in the 'Dx data'\n");
                                                 codeOutput.AppendText("\n");
                                                 break;
                                             }
@@ -287,7 +311,7 @@ namespace Kode_Workshop
                                             {
                                                 codeOutput.AppendText("Type DA : 16-bits read to the data register (ldrh).\nDA000000 XXXXXXXX : loads the halfword at [XXXXXXXX+offset] and stores it in\nthe 'Dx data'\n");
                                                 codeOutput.SelectionColor = Color.Green;
-                                                codeOutput.AppendText("In This Case : loads the halfword at [" + sValue + "+offset] and stores it in the 'Dx data'\n");
+                                                codeOutput.AppendText("In This Case : loads the halfword at [0x" + sValue + "+offset] and stores it in the 'Dx data'\n");
                                                 codeOutput.AppendText("\n");
                                                 break;
                                             }
@@ -295,7 +319,7 @@ namespace Kode_Workshop
                                             {
                                                 codeOutput.AppendText("Type DB : 8-bits read to the data register (ldrb).\nDB000000 XXXXXXXX : loads the byte at [XXXXXXXX+offset] and stores it in the\n'Dx data'\n");
                                                 codeOutput.SelectionColor = Color.Green;
-                                                codeOutput.AppendText("In This Case : loads the byte at [" + sValue + "+offset] and stores it in the 'Dx data'\n");
+                                                codeOutput.AppendText("In This Case : loads the byte at [0x" + sValue + "+offset] and stores it in the 'Dx data'\n");
                                                 codeOutput.AppendText("\n");
                                                 break;
                                             }
@@ -338,12 +362,12 @@ namespace Kode_Workshop
                     }
                     else
                     {
-                        codeOutput.AppendText("Parse error on line #" + i);
+                        codeOutput.AppendText("Parse error on line #" + i + " (Contains illegal characters)");
                     }
                 }
                 else
                 {
-                    codeOutput.AppendText("Parse error on line #" + i);
+                    codeOutput.AppendText("Parse error on line #" + i + " (Length of line is invalid)");
                 }
             }
 
