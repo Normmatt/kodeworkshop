@@ -396,6 +396,7 @@ namespace Kode_Workshop
                 string sDest = branchDestination.Text.Remove(0, 2); //Remove initial 0x
                 uint Source = Convert.ToUInt32(sSource, 16);
                 uint Dest = Convert.ToUInt32(sDest, 16);
+                branchOutput.Clear(); //Best make sure the box is empty before writting
 
                 //Check Source is 4byte aligned
                 uint Temp = (uint)((Source + 3) & ~3);
@@ -403,7 +404,6 @@ namespace Kode_Workshop
                 {
                     Source = Temp; //Lets store new aligned address in source
                     sSource = Convert.ToString(Temp, 16).PadLeft(8, '0');
-                    branchOutput.Clear(); //Best make sure the box is empty before writting
                     branchOutput.SelectionColor = Color.Red; //Lets make error stand out
                     branchOutput.AppendText("The Source address is not 4byte aligned it has been corrected to 0x" + sSource.ToUpper() + "\n"); //Make sure output is uppercase
                     branchOutput.SelectionColor = Color.Green; //Return color to normal
@@ -415,7 +415,6 @@ namespace Kode_Workshop
                 {
                     Dest = Temp; //Make sure destination is 4 byte aligned
                     sDest = Convert.ToString(Temp, 16).PadLeft(8, '0');
-                    branchOutput.Clear(); //Best make sure the box is empty before writting
                     branchOutput.SelectionColor = Color.Red; //Lets make error stand out
                     branchOutput.AppendText("The Destination address is not 4byte aligned it has been corrected to 0x" + sDest.ToUpper() + "\n"); //Make sure output is uppercase
                     branchOutput.SelectionColor = Color.Green; //Return color to normal
@@ -429,20 +428,17 @@ namespace Kode_Workshop
                     sSource = Convert.ToString(Source, 16).PadLeft(8, '0'); //Lets reuse these variables
                     sDest = Convert.ToString(Opcode, 16).PadLeft(8, '0'); //Lets reuse these variables
 
-                    branchOutput.Clear(); //Best make sure the box is empty before writting
                     branchOutput.AppendText(sSource.ToUpper() + " " + sDest.ToUpper()); //Make sure output is uppercase
                 }
                 else
                 {
                     sSource = Convert.ToString(((Diff - 0x00FFFFFF) * 4), 16).PadLeft(8, '0'); ///Lets reuse these variables
-                    branchOutput.Clear(); //Best make sure the box is empty before writting
                     branchOutput.SelectionColor = Color.Red; //Lets make error stand out
                     branchOutput.AppendText("The Destination is " + sSource.ToUpper() + "bytes too far away from the Source\n"); //Make sure output is uppercase
                 }
             }
             else
             {
-                branchOutput.Clear(); //Best make sure the box is empty before writting
                 branchOutput.SelectionColor = Color.Red; //Lets make error stand out
                 branchOutput.AppendText("Both source and destination must start with 0x and must be a total of 10 characters long.\n"); //Make sure output is uppercase
             }
