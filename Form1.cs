@@ -187,6 +187,7 @@ namespace Kode_Workshop
                                                 codeOutput.AppendText("Type C : defines the start of the loop code\n");
                                                 codeOutput.SelectionColor = Color.Green;
                                                 codeOutput.AppendText("C0000000 YYYYYYYY : set the 'Dx repeat value' to YYYYYYYY, saves the 'Dx next\ncode to be executed' and the 'Dx execution status'. Repeat will be executed when\na D1/D2 code is encountered. When repeat is executed, the AR reloads the 'next\ncode to be executed' and the 'execution status' from the Dx registers\n");
+                                                codeOutput.SelectionColor = Color.Green;
                                                 codeOutput.AppendText("In This Case : Dx repeat value = 0x" + sValue + "\n");
                                                 codeOutput.AppendText("\n");
                                                 break;
@@ -202,6 +203,7 @@ namespace Kode_Workshop
                                                 codeOutput.AppendText("Type C6 : Stores the offset at...\n");
                                                 codeOutput.SelectionColor = Color.Green;
                                                 codeOutput.AppendText("C6000000 YYYYYYYY Will store the offset at [YYYYYYYY].\n");
+                                                codeOutput.SelectionColor = Color.Green;
                                                 codeOutput.AppendText("In This Case : word at [0x" + sValue + "] = offset\n");
                                                 codeOutput.AppendText("\n");
                                                 break;
@@ -236,7 +238,7 @@ namespace Kode_Workshop
                                                 codeOutput.SelectionColor = Color.Green;
                                                 codeOutput.AppendText("execution status stays at 'execute codes')\n");
                                                 codeOutput.AppendText("\n");
-                                                ifCount--;
+                                                --ifCount;
                                                 break;
                                             }
                                         case 1:
@@ -249,6 +251,7 @@ namespace Kode_Workshop
                                             {
                                                 codeOutput.AppendText("Type D2 : Used to apply the code type C setting (executes the code(s) after the\ntype C code n times, n being the Dx repeat value).\nAlso acts as a 'Full terminator' (clears all temporary data, ie. execution\nstatus, offsets, code C settings...).\nD2000000 00000000 : if the 'Dx repeat value', set by code type C, is different\nthan 0, it is decremented and then the AR loads the 'Dx next code to be executed'\nand the 'execution status' (=jumps back to the code following the type C code).\nWhen the repeat value is 0, this code will clear the code status, the offset\nvalue, and the Dx data value (which can be set by codes DA, DB and DC).\n");
                                                 codeOutput.AppendText("\n");
+                                                ifCount = 0; //Reset if count as this  code type clears everything
                                                 break;
                                             }
                                         case 3:
@@ -367,7 +370,7 @@ namespace Kode_Workshop
                 }
                 else
                 {
-                    codeOutput.AppendText("Parse error on line #" + i + " (Length of line is invalid)");
+                    codeOutput.AppendText("Length of line is invalid on line #" + i + " (" + temp +")");
                 }
             }
 
@@ -383,6 +386,66 @@ namespace Kode_Workshop
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if ((branchSource.Text.Length == 10) && (branchDestination.Text.Length == 10))
+            {
+                string sSource = branchSource.Text.Remove(0, 2); //Remove initial 0x
+                string sDest = branchDestination.Text.Remove(0, 2); //Remove initial 0x
+                uint Source = Convert.ToUInt32(sSource, 16);
+                uint Dest = Convert.ToUInt32(sDest, 16);
+
+                //Check Source is 4byte aligned
+                uint Temp = (uint)((Source + 3) & ~3);
+                if (Temp != Source)
+                {
+                    Source = Temp; //Lets store new aligned address in source
+                    sSource = Convert.ToString(Temp, 16).PadLeft(8, '0');
+                    branchOutput.Clear(); //Best make sure the box is empty before writting
+                    branchOutput.SelectionColor = Color.Red; //Lets make error stand out
+                    branchOutput.AppendText("The Source address is not 4byte aligned it has been corrected to 0x" + sSource.ToUpper() + "\n"); //Make sure output is uppercase
+                    branchOutput.SelectionColor = Color.Green; //Return color to normal
+                }
+
+                //Check Destination is 4byte aligned
+                Temp = (uint)((Dest + 3) & ~3);
+                if (Temp != Dest)
+                {
+                    Dest = Temp; //Make sure destination is 4 byte aligned
+                    sDest = Convert.ToString(Temp, 16).PadLeft(8, '0');
+                    branchOutput.Clear(); //Best make sure the box is empty before writting
+                    branchOutput.SelectionColor = Color.Red; //Lets make error stand out
+                    branchOutput.AppendText("The Destination address is not 4byte aligned it has been corrected to 0x" + sDest.ToUpper() + "\n"); //Make sure output is uppercase
+                    branchOutput.SelectionColor = Color.Green; //Return color to normal
+                }
+
+                uint Diff = ((Dest - Source - 8) >> 2) & 0x00FFFFFF; //PC is always 8 bytes ahead of source address
+                if (Diff <= 0x00FFFFFF) //Lets make sure the branch is valid
+                {
+                    uint Opcode = 0xEA000000 | Diff;
+
+                    sSource = Convert.ToString(Source, 16).PadLeft(8, '0'); //Lets reuse these variables
+                    sDest = Convert.ToString(Opcode, 16).PadLeft(8, '0'); //Lets reuse these variables
+
+                    branchOutput.Clear(); //Best make sure the box is empty before writting
+                    branchOutput.AppendText(sSource.ToUpper() + " " + sDest.ToUpper()); //Make sure output is uppercase
+                }
+                else
+                {
+                    sSource = Convert.ToString(((Diff - 0x00FFFFFF) * 4), 16).PadLeft(8, '0'); ///Lets reuse these variables
+                    branchOutput.Clear(); //Best make sure the box is empty before writting
+                    branchOutput.SelectionColor = Color.Red; //Lets make error stand out
+                    branchOutput.AppendText("The Destination is " + sSource.ToUpper() + "bytes too far away from the Source\n"); //Make sure output is uppercase
+                }
+            }
+            else
+            {
+                branchOutput.Clear(); //Best make sure the box is empty before writting
+                branchOutput.SelectionColor = Color.Red; //Lets make error stand out
+                branchOutput.AppendText("Both source and destination must start with 0x and must be a total of 10 characters long.\n"); //Make sure output is uppercase
+            }
         }
     }
 }
