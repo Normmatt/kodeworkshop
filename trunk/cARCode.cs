@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Kode_Workshop
+namespace Kodinator
 {
     class cARCode
     {
@@ -20,6 +20,11 @@ namespace Kode_Workshop
         public static string GetAddressFromCode(string code)
         {
             return code.Substring(0, 8).ToUpper().PadLeft(8, '0');
+        }
+
+        public static string GetAddressFromInt(int code)
+        {
+            return Convert.ToString(code,16).ToUpper().PadLeft(8, '0');
         }
 
         public static int GetHexAddressFromCode(string code)
