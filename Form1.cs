@@ -463,6 +463,7 @@ namespace Kodinator
             int code = 0;
             int value = 0;
 
+            int offset = 0;
             int ifCount = 0;
             int loopCount = 0;
             int copyCount = 0;
@@ -514,17 +515,17 @@ namespace Kodinator
                         {
                             case 0:
                                 {
-                                    codeOutput.AppendText("*(unsigned int*)(0x" + sCode.Remove(0, 1).PadLeft(8,'0') + "+offset)= (unsigned int)0x" + sValue + ";\n");
+                                    codeOutput.AppendText("*(unsigned int*)(0x" + sCode.Remove(0, 1).PadLeft(8,'0') + " + " + cARCode.GetOffsetFromInt(offset) + ") = (unsigned int)0x" + sValue + ";\n");
                                     break;
                                 }
                             case 1:
                                 {
-                                    codeOutput.AppendText("*(unsigned short*)(0x" + sCode.Remove(0, 1).PadLeft(8, '0') + "+offset)= (unsigned short)0x" + sValue + ";\n");
+                                    codeOutput.AppendText("*(unsigned short*)(0x" + sCode.Remove(0, 1).PadLeft(8, '0') + " + " + cARCode.GetOffsetFromInt(offset) + ") = (unsigned short)0x" + sValue + ";\n");
                                     break;
                                 }
                             case 2:
                                 {
-                                    codeOutput.AppendText("*(unsigned char*)(0x" + sCode.Remove(0, 1).PadLeft(8, '0') + "+offset)= (unsigned char)0x" + sValue + ";\n");
+                                    codeOutput.AppendText("*(unsigned char*)(0x" + sCode.Remove(0, 1).PadLeft(8, '0') + " + " + cARCode.GetOffsetFromInt(offset) + ") = (unsigned char)0x" + sValue + ";\n");
                                     break;
                                 }
                             case 3:
@@ -621,7 +622,8 @@ namespace Kodinator
                                     codeOutput.SelectionColor = Color.Green;
                                     codeOutput.AppendText("BXXXXXXXX 00000000 : offset = word at [0XXXXXXX]\n");
                                     codeOutput.SelectionColor = Color.Green;*/
-                                    codeOutput.AppendText("offset = *(unsigned init*)(0x" + sCode.Remove(0, 1).PadLeft(8, '0') + "+offset);\n");
+                                    codeOutput.AppendText("offset = *(unsigned int*)(0x" + sCode.Remove(0, 1).PadLeft(8, '0') + " + " + cARCode.GetOffsetFromInt(offset) + ");\n");
+                                    offset = 0; //Lets make it say offset if offset cant be found
                                     break;
                                 }
                             case 12:
@@ -706,9 +708,22 @@ namespace Kodinator
                                                 //codeOutput.AppendText("\n");
                                                 codeOutput.AppendText(indent.Remove(0, 4));
                                                 codeOutput.SelectionColor = Color.Blue;
+                                                int count = ifCount + loopCount;
+                                                if (count != 0) count--; //Lets remove one so we are aligned properly
                                                 if (ifCount != 0 || loopCount != 0)
                                                 {
-                                                    codeOutput.AppendText("}\n");
+                                                    for (int j = count; j-- > 0; ) //Lets hack this for now
+                                                    {
+                                                        indent += "    "; //Append 4 spaces so keeps indentation even
+                                                    }
+
+                                                    for (int k = 0; k < ifCount + loopCount; k++) //Lets hack this for now
+                                                    {
+                                                        indent = indent.Remove(0, 4);
+                                                        codeOutput.AppendText(indent);
+                                                        codeOutput.SelectionColor = Color.Blue;
+                                                        codeOutput.AppendText("}\n");
+                                                    }
                                                 }
                                                 loopCount = 0;
                                                 ifCount = 0; //Reset if count as this  code type clears everything
@@ -720,6 +735,7 @@ namespace Kodinator
                                                 codeOutput.SelectionColor = Color.Green;*/
                                                 codeOutput.AppendText(indent);
                                                 codeOutput.AppendText("offset = 0x" + sValue + ";\n");
+                                                offset = value;
                                                 break;
                                             }
                                         case 4:
@@ -743,10 +759,11 @@ namespace Kodinator
                                                 /*codeOutput.AppendText("Type D6 : 32-bits incremental write of the data register (str).\nD6000000 XXXXXXXX : writes the 'Dx data' word to [XXXXXXXX+offset], and\nincrements the offset by 4\n");
                                                 codeOutput.SelectionColor = Color.Green;*/
                                                 codeOutput.AppendText(indent);
-                                                codeOutput.AppendText("*(unsigned int*)(0x" + sValue + "+offset) = datareg;\n");
+                                                codeOutput.AppendText("*(unsigned int*)(0x" + sValue + " + " + cARCode.GetOffsetFromInt(offset) + ") = datareg;\n");
                                                 codeOutput.AppendText(indent);
                                                 codeOutput.SelectionColor = Color.Blue;
                                                 codeOutput.AppendText("offset += 4;\n");
+                                                offset += 4;
                                                 break;
                                             }
                                         case 7:
@@ -754,10 +771,11 @@ namespace Kodinator
                                                 /*codeOutput.AppendText("ype D7 : 16-bits incremental write of the data register (strh).\nD7000000 XXXXXXXX : writes the 'Dx data' halfword to [XXXXXXXX+offset], and\nincrements the offset by 2.\n");
                                                 codeOutput.SelectionColor = Color.Green;*/
                                                 codeOutput.AppendText(indent);
-                                                codeOutput.AppendText("*(unsigned short*)(0x" + sValue + "+offset) = datareg;\n");
+                                                codeOutput.AppendText("*(unsigned short*)(0x" + sValue + " + " + cARCode.GetOffsetFromInt(offset) + ") = datareg;\n");
                                                 codeOutput.AppendText(indent);
                                                 codeOutput.SelectionColor = Color.Blue;
                                                 codeOutput.AppendText("offset += 2;\n");
+                                                offset += 2;
                                                 break;
                                             }
                                         case 8:
@@ -765,10 +783,11 @@ namespace Kodinator
                                                 /*codeOutput.AppendText("Type D8 : 8-bits incremental write of the data register (strb).\nD8000000 XXXXXXXX : writes the 'Dx data' byte to [XXXXXXXX+offset], and\nincrements the offset by 1.\n");
                                                 codeOutput.SelectionColor = Color.Green;*/
                                                 codeOutput.AppendText(indent);
-                                                codeOutput.AppendText("*(unsigned byte*)(0x" + sValue + "+offset) = datareg;\n");
+                                                codeOutput.AppendText("*(unsigned byte*)(0x" + sValue + " + " + cARCode.GetOffsetFromInt(offset) + ") = datareg;\n");
                                                 codeOutput.AppendText(indent);
                                                 codeOutput.SelectionColor = Color.Blue;
                                                 codeOutput.AppendText("offset += 1;\n");
+                                                offset += 1;
                                                 break;
                                             }
                                         case 9:
@@ -776,7 +795,7 @@ namespace Kodinator
                                                 /*codeOutput.AppendText("Type D9 : 32-bits read to the data register (ldr).\nD9000000 XXXXXXXX : loads the word at [XXXXXXXX+offset] and stores it in the\n'Dx data'\n");
                                                 codeOutput.SelectionColor = Color.Green;*/
                                                 codeOutput.AppendText(indent);
-                                                codeOutput.AppendText("datareg = *(unsigned int*)(0x" + sValue + "+offset);\n");
+                                                codeOutput.AppendText("datareg = *(unsigned int*)(0x" + sValue + " + " + cARCode.GetOffsetFromInt(offset) + ");\n");
                                                 break;
                                             }
                                         case 10:
@@ -784,7 +803,7 @@ namespace Kodinator
                                                 /*codeOutput.AppendText("Type DA : 16-bits read to the data register (ldrh).\nDA000000 XXXXXXXX : loads the halfword at [XXXXXXXX+offset] and stores it in\nthe 'Dx data'\n");
                                                 codeOutput.SelectionColor = Color.Green;*/
                                                 codeOutput.AppendText(indent);
-                                                codeOutput.AppendText("datareg = *(unsigned short*)(0x" + sValue + "+offset);\n");
+                                                codeOutput.AppendText("datareg = *(unsigned short*)(0x" + sValue + " + " + cARCode.GetOffsetFromInt(offset) + ");\n");
                                                 break;
                                             }
                                         case 11:
@@ -792,7 +811,7 @@ namespace Kodinator
                                                 /*codeOutput.AppendText("Type DB : 8-bits read to the data register (ldrb).\nDB000000 XXXXXXXX : loads the byte at [XXXXXXXX+offset] and stores it in the\n'Dx data'\n");
                                                 codeOutput.SelectionColor = Color.Green;*/
                                                 codeOutput.AppendText(indent);
-                                                codeOutput.AppendText("datareg = *(unsigned byte*)(0x" + sValue + "+offset);\n");
+                                                codeOutput.AppendText("datareg = *(unsigned byte*)(0x" + sValue + " + " + cARCode.GetOffsetFromInt(offset) + ");\n");
                                                 break;
                                             }
                                         case 12:
@@ -800,7 +819,8 @@ namespace Kodinator
                                                 /*codeOutput.AppendText("Type DC : adds the offset 'data' to the current offset.\n(some kind of dual offset)\nDC000000 XXXXXXXX : offset = (offset + XXXXXXXX)\n");
                                                 codeOutput.SelectionColor = Color.Green;*/
                                                 codeOutput.AppendText(indent);
-                                                codeOutput.AppendText("offset = (0x" + sValue + "+offset);\n");
+                                                codeOutput.AppendText("offset = (0x" + sValue + " + " + cARCode.GetOffsetFromInt(offset) + ");\n");
+                                                offset += value;
                                                 break;
                                             }
                                         default:

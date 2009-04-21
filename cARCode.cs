@@ -27,6 +27,18 @@ namespace Kodinator
             return Convert.ToString(code,16).ToUpper().PadLeft(8, '0');
         }
 
+        public static string GetOffsetFromInt(int code)
+        {
+            if (code != 0)
+            {
+                return "0x" + Convert.ToString(code, 16).ToUpper().PadLeft(8, '0');
+            }
+            else
+            {
+                return "offset";
+            }
+        }
+
         public static int GetHexAddressFromCode(string code)
         {
             return Convert.ToInt32(code.Substring(0, 8).ToUpper().PadLeft(8, '0'), 16);
