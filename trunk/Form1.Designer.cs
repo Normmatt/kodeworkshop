@@ -111,7 +111,9 @@
             this.codeInput.Name = "codeInput";
             this.codeInput.Size = new System.Drawing.Size(205, 228);
             this.codeInput.TabIndex = 0;
-            this.codeInput.Text = "";
+            this.codeInput.Text = "6209DB88 00000000\nB209DB88 00000000\nDC000000 0000000C\n60000000 00000000\nB0000000 " +
+                "00000000\n60000000 00000000\nB0000000 00000000\n10000000 0000270F\nD2000000 00000000" +
+                "";
             // 
             // tabPage2
             // 
