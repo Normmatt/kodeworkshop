@@ -44,16 +44,24 @@
             this.branchDestination = new System.Windows.Forms.TextBox();
             this.branchOutput = new System.Windows.Forms.RichTextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.button4 = new System.Windows.Forms.Button();
+            this.cbdsOutput = new System.Windows.Forms.RichTextBox();
+            this.cbdsInput = new System.Windows.Forms.RichTextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -111,9 +119,7 @@
             this.codeInput.Name = "codeInput";
             this.codeInput.Size = new System.Drawing.Size(205, 228);
             this.codeInput.TabIndex = 0;
-            this.codeInput.Text = "6209DB88 00000000\nB209DB88 00000000\nDC000000 0000000C\n60000000 00000000\nB0000000 " +
-                "00000000\n60000000 00000000\nB0000000 00000000\n10000000 0000270F\nD2000000 00000000" +
-                "";
+            this.codeInput.Text = "";
             // 
             // tabPage2
             // 
@@ -128,6 +134,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.comboBox1);
+            this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.branchSource);
             this.groupBox1.Controls.Add(this.label1);
@@ -137,14 +145,14 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Location = new System.Drawing.Point(6, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(596, 105);
+            this.groupBox1.Size = new System.Drawing.Size(596, 130);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "&Branch Generator";
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(147, 73);
+            this.button2.Location = new System.Drawing.Point(146, 100);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(67, 21);
             this.button2.TabIndex = 6;
@@ -197,11 +205,70 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 53);
+            this.label2.Location = new System.Drawing.Point(11, 50);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(63, 13);
             this.label2.TabIndex = 3;
             this.label2.Text = "&Destination:";
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.button4);
+            this.tabPage3.Controls.Add(this.cbdsOutput);
+            this.tabPage3.Controls.Add(this.cbdsInput);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(608, 279);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "CBDS -> ARDS";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(233, 113);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(122, 57);
+            this.button4.TabIndex = 2;
+            this.button4.Text = "&Convert to ARDS";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // cbdsOutput
+            // 
+            this.cbdsOutput.Location = new System.Drawing.Point(361, 8);
+            this.cbdsOutput.Name = "cbdsOutput";
+            this.cbdsOutput.Size = new System.Drawing.Size(239, 260);
+            this.cbdsOutput.TabIndex = 1;
+            this.cbdsOutput.Text = "";
+            // 
+            // cbdsInput
+            // 
+            this.cbdsInput.Location = new System.Drawing.Point(8, 8);
+            this.cbdsInput.Name = "cbdsInput";
+            this.cbdsInput.Size = new System.Drawing.Size(219, 260);
+            this.cbdsInput.TabIndex = 0;
+            this.cbdsInput.Text = "";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(11, 76);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(34, 13);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "&Type:";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "ARM Branch",
+            "Thumb Branch with Link"});
+            this.comboBox1.Location = new System.Drawing.Point(107, 73);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(166, 21);
+            this.comboBox1.TabIndex = 10;
+            this.comboBox1.Text = "ARM Branch";
             // 
             // Form1
             // 
@@ -218,6 +285,7 @@
             this.tabPage2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -239,6 +307,12 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.RichTextBox cbdsOutput;
+        private System.Windows.Forms.RichTextBox cbdsInput;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }
 
