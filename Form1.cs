@@ -95,7 +95,7 @@ namespace Kodinator
                                 {
                                     codeOutput.AppendText("Type 4 : 32 bits If (code value)<(data at address)\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [0x" + sCode.Remove(0, 1).PadLeft(8, '0') + "])\n");
+                                    codeOutput.AppendText("checks if 0x" + sValue + " < (word at [0x" + sCode.Remove(0, 1).PadLeft(8, '0') + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -104,7 +104,7 @@ namespace Kodinator
                                 {
                                     codeOutput.AppendText("Type 5 : 32 bits If ==\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [0x" + sCode.Remove(0, 1).PadLeft(8, '0') + "])\n");
+                                    codeOutput.AppendText("checks if 0x" + sValue + " == (word at [0x" + sCode.Remove(0, 1).PadLeft(8, '0') + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -113,7 +113,7 @@ namespace Kodinator
                                 {
                                     codeOutput.AppendText("Type 6 : 32 bits If !=\n");
                                     codeOutput.SelectionColor = Color.Green;
-                                    codeOutput.AppendText("checks if 0x" + sValue + " > (word at [0x" + sCode.Remove(0, 1).PadLeft(8, '0') + "])\n");
+                                    codeOutput.AppendText("checks if 0x" + sValue + " != (word at [0x" + sCode.Remove(0, 1).PadLeft(8, '0') + "])\n");
                                     codeOutput.AppendText("\n");
                                     ifCount++;
                                     break;
@@ -409,43 +409,92 @@ namespace Kodinator
                 uint Dest = Convert.ToUInt32(sDest, 16);
                 branchOutput.Clear(); //Best make sure the box is empty before writting
 
-                //Check Source is 4byte aligned
-                uint Temp = (uint)((Source + 3) & ~3);
-                if (Temp != Source)
+                if (comboBox1.SelectedIndex==1) //Thumb BL
                 {
-                    Source = Temp; //Lets store new aligned address in source
-                    sSource = Convert.ToString(Temp, 16).PadLeft(8, '0');
-                    branchOutput.SelectionColor = Color.Red; //Lets make error stand out
-                    branchOutput.AppendText("The Source address is not 4byte aligned it has been corrected to 0x" + sSource.ToUpper() + "\n"); //Make sure output is uppercase
-                    branchOutput.SelectionColor = Color.Green; //Return color to normal
+                    //Check Source is 2byte aligned
+                    uint Temp = (uint)((Source + 1) & ~1);
+                    if (Temp != Source)
+                    {
+                        Source = Temp; //Lets store new aligned address in source
+                        sSource = Convert.ToString(Temp, 16).PadLeft(8, '0');
+                        branchOutput.SelectionColor = Color.Red; //Lets make error stand out
+                        branchOutput.AppendText("The Source address is not 2byte aligned it has been corrected to 0x" + sSource.ToUpper() + "\n"); //Make sure output is uppercase
+                        branchOutput.SelectionColor = Color.Green; //Return color to normal
+                    }
+
+                    //Check Destination is 2byte aligned
+                    Temp = (uint)((Dest + 1) & ~1);
+                    if (Temp != Dest)
+                    {
+                        Dest = Temp; //Make sure destination is 4 byte aligned
+                        sDest = Convert.ToString(Temp, 16).PadLeft(8, '0');
+                        branchOutput.SelectionColor = Color.Red; //Lets make error stand out
+                        branchOutput.AppendText("The Destination address is not 2byte aligned it has been corrected to 0x" + sDest.ToUpper() + "\n"); //Make sure output is uppercase
+                        branchOutput.SelectionColor = Color.Green; //Return color to normal
+                    }
+
+                    uint tneg = 0;
+                    uint Diff = (Dest - Source - 4) & 0x003FFFFF; //PC is always 8 bytes ahead of source address
+                    if ((Dest - Source - 4) >= 0x003FFFFF)
+                        tneg = 1;
+                    if (Diff <= 0x003FFFFE && (Diff & 1) == 0) //Lets make sure the branch is valid
+                    {
+                        uint part1= (0xF8000000 | ((Diff & 0xFFE) << 15));
+                        uint part2= (0xF000 | ((Diff >> 12) & 0x7FF) | (tneg << 10));
+                        uint Opcode = part1 | part2;
+
+                        sSource = Convert.ToString(Source, 16).PadLeft(8, '0'); //Lets reuse these variables
+                        sDest = Convert.ToString(Opcode, 16).PadLeft(8, '0'); //Lets reuse these variables
+
+                        branchOutput.AppendText(sSource.ToUpper() + " " + sDest.ToUpper()); //Make sure output is uppercase
+                    }
+                    else
+                    {
+                        sSource = Convert.ToString((Diff - 0x003FFFFE), 16).PadLeft(8, '0'); ///Lets reuse these variables
+                        branchOutput.SelectionColor = Color.Red; //Lets make error stand out
+                        branchOutput.AppendText("The Destination is 0x" + sSource.ToUpper() + " bytes too far away from the Source\n"); //Make sure output is uppercase
+                    }
                 }
-
-                //Check Destination is 4byte aligned
-                Temp = (uint)((Dest + 3) & ~3);
-                if (Temp != Dest)
+                else //Arm Branch
                 {
-                    Dest = Temp; //Make sure destination is 4 byte aligned
-                    sDest = Convert.ToString(Temp, 16).PadLeft(8, '0');
-                    branchOutput.SelectionColor = Color.Red; //Lets make error stand out
-                    branchOutput.AppendText("The Destination address is not 4byte aligned it has been corrected to 0x" + sDest.ToUpper() + "\n"); //Make sure output is uppercase
-                    branchOutput.SelectionColor = Color.Green; //Return color to normal
-                }
+                    //Check Source is 4byte aligned
+                    uint Temp = (uint)((Source + 3) & ~3);
+                    if (Temp != Source)
+                    {
+                        Source = Temp; //Lets store new aligned address in source
+                        sSource = Convert.ToString(Temp, 16).PadLeft(8, '0');
+                        branchOutput.SelectionColor = Color.Red; //Lets make error stand out
+                        branchOutput.AppendText("The Source address is not 4byte aligned it has been corrected to 0x" + sSource.ToUpper() + "\n"); //Make sure output is uppercase
+                        branchOutput.SelectionColor = Color.Green; //Return color to normal
+                    }
 
-                uint Diff = ((Dest - Source - 8) >> 2) & 0x00FFFFFF; //PC is always 8 bytes ahead of source address
-                if (Diff <= 0x00FFFFFF) //Lets make sure the branch is valid
-                {
-                    uint Opcode = 0xEA000000 | Diff;
+                    //Check Destination is 4byte aligned
+                    Temp = (uint)((Dest + 3) & ~3);
+                    if (Temp != Dest)
+                    {
+                        Dest = Temp; //Make sure destination is 4 byte aligned
+                        sDest = Convert.ToString(Temp, 16).PadLeft(8, '0');
+                        branchOutput.SelectionColor = Color.Red; //Lets make error stand out
+                        branchOutput.AppendText("The Destination address is not 4byte aligned it has been corrected to 0x" + sDest.ToUpper() + "\n"); //Make sure output is uppercase
+                        branchOutput.SelectionColor = Color.Green; //Return color to normal
+                    }
 
-                    sSource = Convert.ToString(Source, 16).PadLeft(8, '0'); //Lets reuse these variables
-                    sDest = Convert.ToString(Opcode, 16).PadLeft(8, '0'); //Lets reuse these variables
+                    uint Diff = ((Dest - Source - 8) >> 2) & 0x00FFFFFF; //PC is always 8 bytes ahead of source address
+                    if (Diff <= 0x00FFFFFF) //Lets make sure the branch is valid
+                    {
+                        uint Opcode = 0xEA000000 | Diff;
 
-                    branchOutput.AppendText(sSource.ToUpper() + " " + sDest.ToUpper()); //Make sure output is uppercase
-                }
-                else
-                {
-                    sSource = Convert.ToString(((Diff - 0x00FFFFFF) * 4), 16).PadLeft(8, '0'); ///Lets reuse these variables
-                    branchOutput.SelectionColor = Color.Red; //Lets make error stand out
-                    branchOutput.AppendText("The Destination is " + sSource.ToUpper() + "bytes too far away from the Source\n"); //Make sure output is uppercase
+                        sSource = Convert.ToString(Source, 16).PadLeft(8, '0'); //Lets reuse these variables
+                        sDest = Convert.ToString(Opcode, 16).PadLeft(8, '0'); //Lets reuse these variables
+
+                        branchOutput.AppendText(sSource.ToUpper() + " " + sDest.ToUpper()); //Make sure output is uppercase
+                    }
+                    else
+                    {
+                        sSource = Convert.ToString(((Diff - 0x00FFFFFF) * 4), 16).PadLeft(8, '0'); ///Lets reuse these variables
+                        branchOutput.SelectionColor = Color.Red; //Lets make error stand out
+                        branchOutput.AppendText("The Destination is 0x" + sSource.ToUpper() + " bytes too far away from the Source\n"); //Make sure output is uppercase
+                    }
                 }
             }
             else
@@ -897,6 +946,118 @@ namespace Kodinator
                 codeOutput.AppendText("You are missing " + ifCount + " ENDIF codes\n");
                 codeOutput.AppendText("\n");
             }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string temp = "";
+            string sCode = "";
+            string sValue = "";
+            int code = 0;
+            int value = 0;
+
+            //Lets clear textbox so we dont get lots of crap
+            cbdsOutput.Clear();
+
+#if (RELEASE)
+            cbdsOutput.Text = "This feature is unfinished.";
+            return;
+#else
+            for (int i = 0; i < this.cbdsInput.Lines.Length; ++i)
+            {
+                temp = this.cbdsInput.Lines[i].ToUpper(); //Convert text to uppercase
+                sCode = cARCode.GetAddressFromCode(temp); //First 32bits
+                sValue = cARCode.GetValueFromCode(temp); //Last 32Bits
+
+                if (temp.Length == 17) //Make sure codes are right length and that E/F code copys arent checked
+                {
+                    if (cARCode.isCodeValid(sCode, sValue)) //Lets check if there are any illegal characters
+                    {
+                        code = cARCode.GetHexAddressFromCode(temp); //First 32bits
+                        value = cARCode.GetHexValueFromCode(temp); //Last 32Bits
+
+                        int codeType = (code >> 28) & 0x0F;
+                        int dType = (code >> 24) & 0x0F;
+
+                        cbdsOutput.SelectionColor = Color.Blue;
+
+                        switch (codeType)
+                        {
+                            case 0:
+                                {
+                                    cbdsOutput.AppendText("2" + sCode.Remove(0, 1) + " " + sValue + "\n");
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    cbdsOutput.AppendText("1" + sCode.Remove(0, 1) + " " + sValue + "\n");
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    cbdsOutput.AppendText("0" + sCode.Remove(0, 1) + " " + sValue + "\n");
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    if ((value & 0xFFF00000) == 0)
+                                    {
+                                        switch ((code >> 16) & 0x0F)
+                                        {
+                                            case 0:
+                                                cbdsOutput.AppendText("2" + sCode.Remove(0, 1) + " " + cARCode.GetAddressFromInt(value & 0x000000FF) + "\n");
+                                                break;
+                                            case 1:
+                                                cbdsOutput.AppendText("1" + sCode.Remove(0, 1) + " " + cARCode.GetAddressFromInt(value & 0x0000FFFF) + "\n");
+                                                break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        cbdsOutput.AppendText("0" + sCode.Remove(0, 1) + " " + sValue + "\n");
+                                    }
+                                    break;
+                                }
+                            case 0x0D:
+                                {
+                                    switch ((code >> 16) & 0x0F)
+                                    {
+                                        case 0:
+                                            {
+                                                switch ((code >> 16) & 0x03)
+                                                {
+                                                    case 0:
+                                                        //cbdsOutput.AppendText("==\n");
+                                                        int tValue = (int)((~(value << 16)) & 0xFFFF0000);
+                                                        cbdsOutput.AppendText("9" + sCode.Remove(0, 1) + " " + cARCode.GetAddressFromInt(tValue) + "\n");
+                                                        break;
+                                                    case 1:
+                                                        cbdsOutput.AppendText("!=\n");
+                                                        break;
+                                                    case 2:
+                                                        cbdsOutput.AppendText("<\n");
+                                                        break;
+                                                    case 3:
+                                                        cbdsOutput.AppendText(">\n");
+                                                        break;
+                                                }
+
+                                                //cbdsOutput.AppendText("16bit\n");
+                                                break;
+                                            }
+                                        case 1:
+                                            {
+                                                //cbdsOutput.AppendText("8bit\n");
+                                                break;
+                                            }
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+                }
+            }
+#endif
         }
     }
 }
